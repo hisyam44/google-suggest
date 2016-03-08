@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="clipboard.js-master/dist/clipboard.min.js"></script>
+
 </head>
 <body>
 	<div class="container">
@@ -21,29 +23,37 @@
 						</div>
 						<div class="form-group">
 							<button class="btn btn-primary">Cari</button>
+							<button class="btn copy" data-clipboard-target="#foo">Copy All</button>
 						</div>
 					</form>
-					<ul class="list-group">
+
+					<ul class="list-group" id="foo">
 					<?php
 					if(isset($_GET['q'])){
-						function suggest(){
-							$query = $_GET['q'];
+						$str_alfa = ' abcdefghijklmnopqrstuvwxyz0987654321';
+						$arr_alfa = [];
+						$data = [];
+						for($i=0;$i<strlen($str_alfa);$i++){
+							$arr_alfa[$i] = substr($str_alfa, $i,1);
+						}
+						function suggest($q,$add){
+							$query = $q.$add;
 							$url = 'https://clients1.google.co.id/complete/search?hl=id&output=toolbar&q='.$query;
-							$xml = simplexml_load_file($url) or die("feed not loading");
-							$data = [];
+							$xml = simplexml_load_file($url);
 							$str_data = '';
-							$str = '';
-							$suggests = $xml->CompleteSuggestion;
-							foreach ($suggests as $suggest) {
-								$str_data .= "<li class='list-group-item'>".$suggest->suggestion['data']."</li>";
-								echo "<li class='list-group-item'>".$suggest->suggestion['data']."</li>";
-								array_push($data, $str.$suggest->suggestion['data']);
-								foreach($suggest->suggestion->attributes() as $attribute){
+							if(!is_null($xml)){
+								$suggests = $xml->CompleteSuggestion;
+								foreach ($suggests as $suggest) {
+									$str_data .= "".$suggest->suggestion['data']."<br>";
 								}
 							}
-							$results = array('results' => $data );
+							return $str_data;
 						}
-						suggest();
+						foreach($arr_alfa as $al){
+							array_push($data,suggest($_GET['q'],' '.$al));
+							echo suggest($_GET['q'],' '.$al);
+						}
+	
 					}
 					?>
 					</ul>
@@ -52,5 +62,8 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript">
+  		new Clipboard('.copy');
+  	</script>
 </body>
 </html>
