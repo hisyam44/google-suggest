@@ -29,6 +29,7 @@
 
 					<ul class="list-group" id="foo">
 					<?php
+					$jum =0;
 					if(isset($_GET['q'])){
 						$str_alfa = ' abcdefghijklmnopqrstuvwxyz0987654321';
 						$arr_alfa = [];
@@ -51,14 +52,25 @@
 						}
 						foreach($arr_alfa as $al){
 							array_push($data,suggest($_GET['q'],' '.$al));
+							echo "<h3>".$al."</h3>";
 							echo suggest($_GET['q'],' '.$al);
+							$jum += 10;
 						}
-	
 					}
 					?>
 					</ul>
 				</div>
 			</div>
+			</div>
+			<div class="col-md-3">
+				<div class="panel panel-primary">
+					<div class="panel-heading">Jumlah Keyword Suggestion</div>
+					<div class="panel-body">
+						<?php
+							echo "<h1>".$jum."</h1>";
+						?>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
