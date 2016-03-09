@@ -13,7 +13,7 @@
 <body>
 	<div class="container">
 		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
+			<div class="col-md-6 col-md-offset-2">
 			<div class="panel panel-primary">
 				<div class="panel-heading">Search Suggestion</div>
 				<div class="panel-body">
@@ -29,6 +29,24 @@
 
 					<ul class="list-group" id="foo">
 					<?php
+						function suggest($q,$add){
+							$query = $q.$add;
+							$url = 'https://clients1.google.co.id/complete/search?hl=id&output=toolbar&q='.$query;
+							$xml = simplexml_load_file($url);
+							$jum = 0;
+							$arr_data = [];
+							$str_data = '';
+							if(!is_null($xml)){
+								$suggests = $xml->CompleteSuggestion;
+								foreach ($suggests as $suggest) {
+									$str_data .= "".$suggest->suggestion['data']."<br>";
+									$jum++;
+								}
+							}
+							$arr_data[0] = $str_data;
+							$arr_data[1] = $jum;
+							return $arr_data;
+						}
 					$jum =0;
 					if(isset($_GET['q'])){
 						$str_alfa = ' abcdefghijklmnopqrstuvwxyz0987654321';
@@ -37,24 +55,12 @@
 						for($i=0;$i<strlen($str_alfa);$i++){
 							$arr_alfa[$i] = substr($str_alfa, $i,1);
 						}
-						function suggest($q,$add){
-							$query = $q.$add;
-							$url = 'https://clients1.google.co.id/complete/search?hl=id&output=toolbar&q='.$query;
-							$xml = simplexml_load_file($url);
-							$str_data = '';
-							if(!is_null($xml)){
-								$suggests = $xml->CompleteSuggestion;
-								foreach ($suggests as $suggest) {
-									$str_data .= "".$suggest->suggestion['data']."<br>";
-								}
-							}
-							return $str_data;
-						}
 						foreach($arr_alfa as $al){
 							array_push($data,suggest($_GET['q'],' '.$al));
 							echo "<h3>".$al."</h3>";
-							echo suggest($_GET['q'],' '.$al);
-							$jum += 10;
+							$arr_data = suggest($_GET['q'],' '.$al);
+							echo $arr_data[0];
+							$jum += $arr_data[1];
 						}
 					}
 					?>
